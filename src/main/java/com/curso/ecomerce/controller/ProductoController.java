@@ -56,7 +56,15 @@ public class ProductoController {
 	
 	@PostMapping("/update")
 	public String update(Producto producto) {
+		Usuario usuario = new Usuario(1, "", "", "", "", "", "", "");
+		producto.setUsuario(usuario);
 		productoService.update(producto);
+		return "redirect:/productos";
+	}
+	
+	@GetMapping("/delete/{id}")
+	public String delete(@PathVariable Integer id) {
+		productoService.delete(id);
 		return "redirect:/productos";
 	}
 	
