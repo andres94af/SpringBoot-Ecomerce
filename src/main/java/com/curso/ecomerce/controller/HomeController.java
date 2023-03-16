@@ -22,16 +22,16 @@ import com.curso.ecomerce.service.ProductoService;
 @Controller
 @RequestMapping("/")
 public class HomeController {
-	
+
 	Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private ProductoService productoService;
-	
-	//almacena los detalles de la ordem
+
+	// almacena los detalles de la ordem
 	List<DetalleOrden> detalles = new ArrayList<DetalleOrden>();
-	
-	//datos de la orden
+
+	// datos de la orden
 	Orden orden = new Orden();
 
 	@GetMapping("")
@@ -40,26 +40,37 @@ public class HomeController {
 		model.addAttribute("productos", productos);
 		return "usuario/home";
 	}
-	
+
 	@GetMapping("/productohome/{id}")
-	public String productoHome(Model model,@PathVariable Integer id) {
+	public String productoHome(Model model, @PathVariable Integer id) {
 		Optional<Producto> producto = productoService.get(id);
 		Producto p = producto.get();
 		LOGGER.info("Este es el producto recibido {}", p);
 		model.addAttribute("producto", p);
 		return "usuario/productohome";
 	}
-	
+
 	@PostMapping("/cart")
-	public String addCart(@RequestParam Integer id, @RequestParam Integer cantidad) {
+	public String addCart(@RequestParam Integer id, @RequestParam Integer cantidad, Model model) {
 		DetalleOrden detalleOrden = new DetalleOrden();
 		Producto producto = new Producto();
-		double subTotal = 0;
-		
+		double sumaTotal = 0;
+
 		Optional<Producto> optionalProducto = productoService.get(id);
-		LOGGER.info("producto añadido: {}", optionalProducto.get());
-		LOGGER.info("cantidad del producto añadida: {}", cantidad);
-		
+		producto = optionalProducto.get();
+		detalleOrden.setCantidad(cantidad);
+		detalleOrden.setNombre(producto.getNombre());
+		detalleOrden.setPrecio(producto.getPrecio());
+		detalleOrden.setTotal(producto.getPrecio() * cantidad);
+		detalleOrden.setProducto(producto);
+
+		detalles.add(detalleOrden);
+		sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
+
+		orden.setTotal(sumaTotal);
+		model.addAttribute("cart", detalles);
+		model.addAttribute("orden", orden);
+
 		return "usuario/carrito";
 	}
 
