@@ -25,6 +25,7 @@ public class OrdenServiceImpl implements IOrdenService {
 		return ordenRepository.findAll();
 	}
 	
+	@Override
 	public String generarNumeroOrden() {
 		int numero = 0;
 		String numeroConcatenado = "";
@@ -41,7 +42,7 @@ public class OrdenServiceImpl implements IOrdenService {
 			numero = numeros.stream().max(Integer::compare).get();
 			numero++;
 		}
-		
+		//agrega CEROS al cmienzo del numero de orden
 		if (numero<10) {
 			numeroConcatenado = "0000"+String.valueOf(numero);
 		}else if(numero<100) {
@@ -51,8 +52,6 @@ public class OrdenServiceImpl implements IOrdenService {
 		}else if(numero<10000) {
 			numeroConcatenado = "0"+String.valueOf(numero);
 		}
-		
-		
 		return numeroConcatenado;
 	}
 
