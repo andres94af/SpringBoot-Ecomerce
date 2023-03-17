@@ -54,7 +54,7 @@ public class HomeController {
 	public String addCart(@RequestParam Integer id, @RequestParam Integer cantidad, Model model) {
 		DetalleOrden detalleOrden = new DetalleOrden();
 		Producto producto = new Producto();
-		double sumaTotal = 0;
+
 
 		Optional<Producto> optionalProducto = productoService.get(id);
 		producto = optionalProducto.get();
@@ -65,12 +65,34 @@ public class HomeController {
 		detalleOrden.setProducto(producto);
 
 		detalles.add(detalleOrden);
+		double sumaTotal = 0;
 		sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
-
 		orden.setTotal(sumaTotal);
 		model.addAttribute("cart", detalles);
 		model.addAttribute("orden", orden);
 
+		return "usuario/carrito";
+	}
+	
+	//elimina un producto del carrito
+	@GetMapping("/delete/cart/{id}")
+	public String deleteProductoCart(@PathVariable Integer id, Model model) {
+		
+		List<DetalleOrden> ordenesNueva = new ArrayList<DetalleOrden>();
+		
+		for(DetalleOrden detalleOrden: detalles) {
+			if(detalleOrden.getProducto().getId()!=id) {
+				ordenesNueva.add(detalleOrden);
+			}
+		}
+		
+		detalles=ordenesNueva;
+		double sumaTotal = 0;
+		sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
+		orden.setTotal(sumaTotal);
+		model.addAttribute("cart", detalles);
+		model.addAttribute("orden", orden);
+		
 		return "usuario/carrito";
 	}
 
