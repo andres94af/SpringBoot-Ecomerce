@@ -3,9 +3,9 @@ package com.curso.ecomerce.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.curso.ecomerce.model.Usuario;
+import com.curso.ecomerce.model.DetalleOrden;
 
 @Repository
-public interface UsuarioRepository extends JpaRepository<Usuario, Integer>{
+public interface IDetalleOrdenRepository extends JpaRepository<DetalleOrden, Integer>{
 
 }
