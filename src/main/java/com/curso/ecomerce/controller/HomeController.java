@@ -29,7 +29,7 @@ import com.curso.ecomerce.service.ProductoService;
 @RequestMapping("/")
 public class HomeController {
 
-	Logger LOGGER = LoggerFactory.getLogger(getClass());
+	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private ProductoService productoService;
