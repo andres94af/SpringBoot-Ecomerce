@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.curso.ecomerce.model.Producto;
 import com.curso.ecomerce.model.Usuario;
 import com.curso.ecomerce.repository.IUsuarioRepository;
+import com.curso.ecomerce.service.IOrdenService;
 import com.curso.ecomerce.service.IUsuarioService;
 import com.curso.ecomerce.service.ProductoService;
 
@@ -24,6 +25,9 @@ public class AdministradorController {
 	@Autowired
 	private IUsuarioService usuarioService;
 	
+	@Autowired
+	private IOrdenService ordenService;
+	
 	@GetMapping("")
 	public String home(Model model) {
 		List<Producto> productos = productoService.findAll();
@@ -35,6 +39,12 @@ public class AdministradorController {
 	public String usuarios(Model model) {
 		model.addAttribute("usuarios", usuarioService.findAll());
 		return "administrador/usuarios";
+	}
+	
+	@GetMapping("/ordenes")
+	public String ordenes(Model model) {
+		model.addAttribute("ordenes", ordenService.findAll());
+		return "administrador/ordenes";
 	}
 
 }
