@@ -3,6 +3,8 @@ package com.curso.ecomerce.controller;
 import java.util.List;
 import java.util.Optional;
 
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,6 @@ import com.curso.ecomerce.model.Usuario;
 import com.curso.ecomerce.service.IOrdenService;
 import com.curso.ecomerce.service.IUsuarioService;
 
-import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/usuario")

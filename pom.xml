@@ -4,17 +4,19 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.4</version>
+		<version>2.4.1</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.curso.ecomerce</groupId>
-	<artifactId>spring-ecomerce</artifactId>
-	<version>1.0.0</version>
-	<name>spring-ecomerce</name>
-	<description>Curso de spring proyecto Ecomerce</description>
+	<groupId>com.curso.ecommerce</groupId>
+	<artifactId>spring-ecommerce</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>spring-ecommerce</name>
+	<description>Curso de Spring proyecto ecommerce</description>
+
 	<properties>
-		<java.version>17</java.version>
+		<java.version>11</java.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -36,8 +38,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -45,12 +47,12 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -59,5 +61,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
