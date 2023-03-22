@@ -35,13 +35,13 @@ public class HomeController {
 
 	@Autowired
 	private ProductoService productoService;
-	
+
 	@Autowired
 	private IUsuarioService usuarioService;
-	
+
 	@Autowired
 	private IOrdenService ordenService;
-	
+
 	@Autowired
 	private IDetalleOrdenService detalleOrdenService;
 
@@ -55,10 +55,10 @@ public class HomeController {
 	public String home(Model model, HttpSession session) {
 		List<Producto> productos = productoService.findAll();
 		LOGGER.info("Sesion del usuario: {}", session.getAttribute("idusuario"));
-		
+
 		model.addAttribute("productos", productos);
 		model.addAttribute("sesion", session.getAttribute("idusuario"));
-		
+
 		return "usuario/home";
 	}
 
@@ -72,65 +72,66 @@ public class HomeController {
 	}
 
 	@PostMapping("/cart")
-	public String addCart(@RequestParam Integer id, @RequestParam Integer cantidad, Model model) {
-		DetalleOrden detalleOrden = new DetalleOrden();
-		Producto producto = new Producto();
-
-		Optional<Producto> optionalProducto = productoService.get(id);
-		producto = optionalProducto.get();
-		detalleOrden.setCantidad(cantidad);
-		detalleOrden.setNombre(producto.getNombre());
-		detalleOrden.setPrecio(producto.getPrecio());
-		detalleOrden.setTotal(producto.getPrecio() * cantidad);
-		detalleOrden.setProducto(producto);
-		
-		//validar que el producto no se añada mas de una vez al carrito
-		Integer idProducto = producto.getId();
-		boolean ingresado = detalles.stream().anyMatch(p -> p.getProducto().getId()==idProducto);
-		
-		if(!ingresado) {
-			detalles.add(detalleOrden);
+	public String addCart(@RequestParam Integer id, @RequestParam Integer cantidad, Model model, HttpSession session) {
+		if (session.getAttribute("idusuario") != null) {
+			DetalleOrden detalleOrden = new DetalleOrden();
+			Producto producto = new Producto();
+			Optional<Producto> optionalProducto = productoService.get(id);
+			producto = optionalProducto.get();
+			detalleOrden.setCantidad(cantidad);
+			detalleOrden.setNombre(producto.getNombre());
+			detalleOrden.setPrecio(producto.getPrecio());
+			detalleOrden.setTotal(producto.getPrecio() * cantidad);
+			detalleOrden.setProducto(producto);
+			// validar que el producto no se añada mas de una vez al carrito
+			Integer idProducto = producto.getId();
+			boolean ingresado = detalles.stream().anyMatch(p -> p.getProducto().getId() == idProducto);
+			if (!ingresado) {
+				detalles.add(detalleOrden);
+			}
+			double sumaTotal = 0;
+			sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
+			orden.setTotal(sumaTotal);
+			model.addAttribute("cart", detalles);
+			model.addAttribute("orden", orden);
+			model.addAttribute("sesion", session.getAttribute("idusuario"));
+			return "usuario/carrito";
+		}else {
+			return "usuario/login";
 		}
 
-		double sumaTotal = 0;
-		sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
-		orden.setTotal(sumaTotal);
-		model.addAttribute("cart", detalles);
-		model.addAttribute("orden", orden);
-
-		return "usuario/carrito";
 	}
-	
-	//elimina un producto del carrito
+
+	// elimina un producto del carrito
 	@GetMapping("/delete/cart/{id}")
 	public String deleteProductoCart(@PathVariable Integer id, Model model) {
-		
+
 		List<DetalleOrden> ordenesNueva = new ArrayList<DetalleOrden>();
-		
-		for(DetalleOrden detalleOrden: detalles) {
-			if(detalleOrden.getProducto().getId()!=id) {
+
+		for (DetalleOrden detalleOrden : detalles) {
+			if (detalleOrden.getProducto().getId() != id) {
 				ordenesNueva.add(detalleOrden);
 			}
 		}
-		
-		detalles=ordenesNueva;
+
+		detalles = ordenesNueva;
 		double sumaTotal = 0;
 		sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
 		orden.setTotal(sumaTotal);
 		model.addAttribute("cart", detalles);
 		model.addAttribute("orden", orden);
-		
+
 		return "usuario/carrito";
 	}
-	
+
 	@GetMapping("/getCart")
 	public String getCart(Model model, HttpSession session) {
 		model.addAttribute("cart", detalles);
 		model.addAttribute("orden", orden);
 		model.addAttribute("sesion", session.getAttribute("idusuario"));
-		return"usuario/carrito";
+		return "usuario/carrito";
 	}
-	
+
 	@GetMapping("/order")
 	public String order(Model model, HttpSession session) {
 		Usuario usuario = usuarioService.findById(Integer.parseInt(session.getAttribute("idusuario").toString())).get();
@@ -139,40 +140,38 @@ public class HomeController {
 		model.addAttribute("orden", orden);
 		return "usuario/resumenorden";
 	}
-	
+
 	@GetMapping("/saveOrder")
 	public String saveOrder(HttpSession session) {
-		//obtiene fecha y usuario para asignar a la orden
+		// obtiene fecha y usuario para asignar a la orden
 		Date fechaCreacion = new Date();
 		Usuario usuario = usuarioService.findById(Integer.parseInt(session.getAttribute("idusuario").toString())).get();
-		//asigna fecha, numero, usuario y guarda la orden en bbdd
+		// asigna fecha, numero, usuario y guarda la orden en bbdd
 		orden.setFechaCreacion(fechaCreacion);
 		orden.setNumero(ordenService.generarNumeroOrden());
 		orden.setUsuario(usuario);
 		ordenService.save(orden);
-		//a cada detalle le asigna la orden y guarda en bbdd
-		for (DetalleOrden dt:detalles) {
+		// a cada detalle le asigna la orden y guarda en bbdd
+		for (DetalleOrden dt : detalles) {
 			dt.setOrden(orden);
 			detalleOrdenService.save(dt);
 		}
-		//limpiar detalles y orden (carrito). Luego redirecciona ala home
+		// limpiar detalles y orden (carrito). Luego redirecciona ala home
 		orden = new Orden();
 		detalles.clear();
 		return "redirect:/";
 	}
-	
+
 	@PostMapping("/search")
 	public String searchProduct(@RequestParam String nombre, Model model) {
 		String nombreMinuscula = nombre.toLowerCase();
 		LOGGER.info("nombre del producto a buscar: {}", nombreMinuscula);
-		
-		List<Producto> productos = 
-				productoService.findAll().stream()
-				.filter(p -> p.getNombre().toLowerCase().contains(nombreMinuscula))
-				.collect(Collectors.toList()); 
-		
+
+		List<Producto> productos = productoService.findAll().stream()
+				.filter(p -> p.getNombre().toLowerCase().contains(nombreMinuscula)).collect(Collectors.toList());
+
 		model.addAttribute("productos", productos);
-				
+
 		return "usuario/home";
 	}
 
