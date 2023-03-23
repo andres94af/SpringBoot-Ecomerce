@@ -131,6 +131,7 @@ public class HomeController {
 		model.addAttribute("usuario", usuario);
 		model.addAttribute("cart", detalles);
 		model.addAttribute("orden", orden);
+		model.addAttribute("sesion", session.getAttribute("idusuario"));
 		return "usuario/resumenorden";
 	}
 
@@ -156,15 +157,13 @@ public class HomeController {
 	}
 
 	@PostMapping("/search")
-	public String searchProduct(@RequestParam String nombre, Model model) {
+	public String searchProduct(@RequestParam String nombre, Model model, HttpSession session) {
 		String nombreMinuscula = nombre.toLowerCase();
 		LOGGER.info("nombre del producto a buscar: {}", nombreMinuscula);
-
 		List<Producto> productos = productoService.findAll().stream()
 				.filter(p -> p.getNombre().toLowerCase().contains(nombreMinuscula)).collect(Collectors.toList());
-
 		model.addAttribute("productos", productos);
-
+		model.addAttribute("sesion", session.getAttribute("idusuario"));
 		return "usuario/home";
 	}
 

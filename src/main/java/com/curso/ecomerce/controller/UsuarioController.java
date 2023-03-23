@@ -47,7 +47,7 @@ public class UsuarioController {
 		usuario.setTipo("USER");
 		usuario.setPassword(passEncode.encode(usuario.getPassword()));
 		usuarioService.save(usuario);
-		return "redirect:/";
+		return "usuario/registro_exitoso";
 	}
 
 	@GetMapping("/login")
