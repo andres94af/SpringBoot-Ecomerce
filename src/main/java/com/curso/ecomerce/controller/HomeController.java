@@ -55,10 +55,8 @@ public class HomeController {
 	public String home(Model model, HttpSession session) {
 		List<Producto> productos = productoService.findAll();
 		LOGGER.info("Sesion del usuario: {}", session.getAttribute("idusuario"));
-
 		model.addAttribute("productos", productos);
 		model.addAttribute("sesion", session.getAttribute("idusuario"));
-
 		return "usuario/home";
 	}
 
@@ -99,28 +97,23 @@ public class HomeController {
 		}else {
 			return "usuario/login";
 		}
-
 	}
 
 	// elimina un producto del carrito
 	@GetMapping("/delete/cart/{id}")
 	public String deleteProductoCart(@PathVariable Integer id, Model model) {
-
 		List<DetalleOrden> ordenesNueva = new ArrayList<DetalleOrden>();
-
 		for (DetalleOrden detalleOrden : detalles) {
 			if (detalleOrden.getProducto().getId() != id) {
 				ordenesNueva.add(detalleOrden);
 			}
 		}
-
 		detalles = ordenesNueva;
 		double sumaTotal = 0;
 		sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
 		orden.setTotal(sumaTotal);
 		model.addAttribute("cart", detalles);
 		model.addAttribute("orden", orden);
-
 		return "usuario/carrito";
 	}
 
