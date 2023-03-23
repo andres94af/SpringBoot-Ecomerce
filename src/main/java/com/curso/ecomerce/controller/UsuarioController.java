@@ -43,11 +43,19 @@ public class UsuarioController {
 
 	@PostMapping("/save")
 	public String saveUser(Usuario usuario) {
-		LOGGER.info("Usuario registrado: {}", usuario);
 		usuario.setTipo("USER");
 		usuario.setPassword(passEncode.encode(usuario.getPassword()));
 		usuarioService.save(usuario);
 		return "usuario/registro_exitoso";
+	}
+	
+	@PostMapping("/update")
+	public String updateUser(Usuario usuario) {
+		usuario.setTipo("USER");
+		usuario.setPassword(passEncode.encode(usuario.getPassword()));
+		usuarioService.update(usuario);
+		LOGGER.info("Actualizado correctamente el usuario: {}", usuario);
+		return "redirect:/";
 	}
 
 	@GetMapping("/login")
@@ -87,6 +95,14 @@ public class UsuarioController {
 		Orden orden = ordenService.findById(id).get();
 		model.addAttribute("detalles", orden.getDetalle());
 		return "usuario/detallecompra";
+	}
+	
+	@GetMapping("/datospersonales")
+	public String datosPersonales(Model model, HttpSession session) {
+		Usuario usuario = usuarioService.findById(Integer.parseInt(session.getAttribute("idusuario").toString())).get();
+		model.addAttribute("sesion", session.getAttribute("idusuario"));
+		model.addAttribute("usuario", usuario);
+		return "usuario/datos_personales";
 	}
 	
 	@GetMapping("cerrar")

@@ -35,6 +35,11 @@ public class UsuarioServiceImpl implements IUsuarioService {
 		return usuarioRepository.findAll();
 	}
 
+	@Override
+	public void update(Usuario usuario) {
+		usuarioRepository.save(usuario);
+	}
+
 
 
 }
