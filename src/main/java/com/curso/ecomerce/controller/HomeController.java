@@ -61,11 +61,12 @@ public class HomeController {
 	}
 
 	@GetMapping("/productohome/{id}")
-	public String productoHome(Model model, @PathVariable Integer id) {
+	public String productoHome(Model model, @PathVariable Integer id, HttpSession session) {
 		Optional<Producto> producto = productoService.get(id);
 		Producto p = producto.get();
 		LOGGER.info("Este es el producto recibido {}", p);
 		model.addAttribute("producto", p);
+		model.addAttribute("sesion", session.getAttribute("idusuario"));
 		return "usuario/productohome";
 	}
 
@@ -86,6 +87,7 @@ public class HomeController {
 			boolean ingresado = detalles.stream().anyMatch(p -> p.getProducto().getId() == idProducto);
 			if (!ingresado) {
 				detalles.add(detalleOrden);
+				//producto.setCantidad(producto.getCantidad()-cantidad);
 			}
 			double sumaTotal = 0;
 			sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
@@ -101,7 +103,7 @@ public class HomeController {
 
 	// elimina un producto del carrito
 	@GetMapping("/delete/cart/{id}")
-	public String deleteProductoCart(@PathVariable Integer id, Model model) {
+	public String deleteProductoCart(@PathVariable Integer id, Model model, HttpSession session) {
 		List<DetalleOrden> ordenesNueva = new ArrayList<DetalleOrden>();
 		for (DetalleOrden detalleOrden : detalles) {
 			if (detalleOrden.getProducto().getId() != id) {
@@ -114,6 +116,7 @@ public class HomeController {
 		orden.setTotal(sumaTotal);
 		model.addAttribute("cart", detalles);
 		model.addAttribute("orden", orden);
+		model.addAttribute("sesion", session.getAttribute("idusuario"));
 		return "usuario/carrito";
 	}
 
@@ -145,8 +148,12 @@ public class HomeController {
 		orden.setNumero(ordenService.generarNumeroOrden());
 		orden.setUsuario(usuario);
 		ordenService.save(orden);
-		// a cada detalle le asigna la orden y guarda en bbdd
+		// a cada detalle le asigna la orden, resta productos comprados y guarda en bbdd
 		for (DetalleOrden dt : detalles) {
+			Producto producto = dt.getProducto();
+			int cantidad = dt.getCantidad();
+			producto.setCantidad(producto.getCantidad()-cantidad);
+			productoService.update(producto);
 			dt.setOrden(orden);
 			detalleOrdenService.save(dt);
 		}
