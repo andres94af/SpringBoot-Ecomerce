@@ -1,5 +1,6 @@
 package com.curso.ecomerce.controller;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,7 @@ import com.curso.ecomerce.service.IDetalleOrdenService;
 import com.curso.ecomerce.service.IOrdenService;
 import com.curso.ecomerce.service.IUsuarioService;
 import com.curso.ecomerce.service.ProductoService;
+import com.itextpdf.text.DocumentException;
 
 import javax.servlet.http.HttpSession;
 
@@ -157,7 +159,17 @@ public class HomeController {
 			dt.setOrden(orden);
 			detalleOrdenService.save(dt);
 		}
-		// limpiar detalles y orden (carrito). Luego redirecciona ala home
+		
+		//crea pdf de la orden
+		try {
+			ordenService.generarOrdenPDF(orden, detalles);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		
+		// limpiar detalles y orden (carrito). Luego redirecciona a la home
 		orden = new Orden();
 		detalles.clear();
 		return "redirect:/";
