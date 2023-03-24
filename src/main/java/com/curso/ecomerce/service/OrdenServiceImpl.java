@@ -87,7 +87,7 @@ public class OrdenServiceImpl implements IOrdenService {
 		return ordenRepository.findById(id);
 	}
 
-//	---------------------------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------------------------------------
 	
 //METODO QUE GENERA LA ORDEN EN PDF AL MOMENTO DE GENERARLA EN LA WEB
 	public void generarOrdenPDF(Orden orden, List<DetalleOrden> detalles) throws DocumentException, FileNotFoundException {
@@ -98,7 +98,7 @@ public class OrdenServiceImpl implements IOrdenService {
 		// FUENTE Y TAMANO DE LAS LETRAS
 		Font fuenteTitulo = FontFactory.getFont(FontFactory.TIMES_ROMAN, 17);
 		Font fuenteParrafo = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10);
-		Font fuenteTotal = FontFactory.getFont(FontFactory.TIMES_ROMAN, 12 , Font.BOLD);
+		Font fuenteParrafoNegrita = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10, Font.BOLD);
 		// CREA DOCUMENTO
 		documento = new Document(PageSize.A4, 35, 30, 50, 50);
 		// ARCHIVO PDF
@@ -120,59 +120,78 @@ public class OrdenServiceImpl implements IOrdenService {
 		documento.add(tablaTitulo);
 		documento.add(saltoLinea);
 		documento.add(saltoLinea);
-		// AGREGAR TABLA DE INFO USUARIO Y FECHA
+		// AGREGAR INFO USUARIO Y FECHA
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
 		PdfPTable tablaInfo = new PdfPTable(1);
-		PdfPCell fecha = new PdfPCell(new Phrase("Fecha: " + formatter.format(orden.getFechaCreacion()), fuenteParrafo));
-		fecha.setColspan(4);
-		fecha.setBorderColor(BaseColor.WHITE); 	
-		fecha.setHorizontalAlignment(Element.ALIGN_LEFT);
-		tablaInfo.addCell(fecha);
-		
-		PdfPCell nombre = new PdfPCell(new Phrase("Nombre: " + orden.getUsuario().getNombre() + " " + orden.getUsuario().getApellido(), fuenteParrafo));
-		nombre.setColspan(4);
-		nombre.setBorderColor(BaseColor.WHITE); 	
-		nombre.setHorizontalAlignment(Element.ALIGN_LEFT);
-		tablaInfo.addCell(nombre);
-		
-		PdfPCell direccion = new PdfPCell(new Phrase("Direccion: " + orden.getUsuario().getDireccion(), fuenteParrafo));
-		direccion.setColspan(4);
-		direccion.setBorderColor(BaseColor.WHITE); 	
-		direccion.setHorizontalAlignment(Element.ALIGN_LEFT);
-		tablaInfo.addCell(direccion);
-		
-		PdfPCell mail = new PdfPCell(new Phrase("Mail: " + orden.getUsuario().getEmail(), fuenteParrafo));
-		mail.setColspan(4);
-		mail.setBorderColor(BaseColor.WHITE); 	
-		mail.setHorizontalAlignment(Element.ALIGN_LEFT);
-		tablaInfo.addCell(mail);
-
+		PdfPCell cell = new PdfPCell(new Phrase("Fecha: " + formatter.format(orden.getFechaCreacion()), fuenteParrafo));
+		cell.setBorderColor(BaseColor.WHITE);
+		tablaInfo.addCell(cell);
+		PdfPCell cell2 = new PdfPCell(new Phrase("Nombre: " + orden.getUsuario().getNombre() + " " + orden.getUsuario().getApellido(), fuenteParrafo));
+		cell2.setBorderColor(BaseColor.WHITE);
+		tablaInfo.addCell(cell2);
+		PdfPCell cell3 = new PdfPCell(new Phrase("Direccion: " + orden.getUsuario().getDireccion(), fuenteParrafo));
+		cell3.setBorderColor(BaseColor.WHITE);
+		tablaInfo.addCell(cell3);
+		PdfPCell cell4 = new PdfPCell(new Phrase("Mail: " + orden.getUsuario().getEmail(), fuenteParrafo));
+		cell4.setBorderColor(BaseColor.WHITE);
+		tablaInfo.addCell(cell4);
+		tablaInfo.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
 		documento.add(tablaInfo);
+		documento.add(saltoLinea);
 		documento.add(saltoLinea);
 		// AGREGAR TABLA DE DETALLES
 		PdfPTable tablaDetalles = new PdfPTable(4);
-		tablaDetalles.addCell("Cantidad");
-		tablaDetalles.addCell("Producto");
-		tablaDetalles.addCell("Precio");
-		tablaDetalles.addCell("Total");
+		PdfPCell celdahead1 = new PdfPCell(new Phrase("Cantidad", fuenteParrafoNegrita));
+		celdahead1.setBorderWidth(0);
+		tablaDetalles.addCell(celdahead1);
+		PdfPCell celdahead2 = new PdfPCell(new Phrase("Producto", fuenteParrafoNegrita));
+		celdahead2.setBorderWidth(0);
+		tablaDetalles.addCell(celdahead2);
+		PdfPCell celdahead3 = new PdfPCell(new Phrase("Precio", fuenteParrafoNegrita));
+		celdahead3.setBorderWidth(0);
+		celdahead3.setHorizontalAlignment(Element.ALIGN_RIGHT);
+		tablaDetalles.addCell(celdahead3);
+		PdfPCell celdahead4 = new PdfPCell(new Phrase("Subtotal", fuenteParrafoNegrita));
+		celdahead4.setBorderWidth(0);
+		celdahead4.setHorizontalAlignment(Element.ALIGN_RIGHT);
+		tablaDetalles.addCell(celdahead4);
 		for(DetalleOrden d: detalles) {
-			tablaDetalles.addCell(String.valueOf(d.getCantidad()));
-			tablaDetalles.addCell(d.getProducto().getNombre());
-			tablaDetalles.addCell("€ " + String.valueOf(d.getPrecio()));
-			tablaDetalles.addCell("€ " + String.valueOf(d.getTotal()));
+			PdfPCell cell5 = new PdfPCell(new Phrase(String.valueOf(d.getCantidad()),fuenteParrafo));
+			cell5.setBorderWidth(0);
+			tablaDetalles.addCell(cell5);
+			PdfPCell cell6 = new PdfPCell(new Phrase(d.getProducto().getNombre(),fuenteParrafo));
+			cell6.setBorderWidth(0);
+			tablaDetalles.addCell(cell6);
+			PdfPCell cell7 = new PdfPCell(new Phrase("€ " + String.valueOf(d.getPrecio()),fuenteParrafo));
+			cell7.setBorderWidth(0);
+			cell7.setHorizontalAlignment(Element.ALIGN_RIGHT);
+			tablaDetalles.addCell(cell7);
+			PdfPCell cell8 = new PdfPCell(new Phrase("€ " + String.valueOf(d.getTotal()),fuenteParrafo));
+			cell8.setBorderWidth(0);
+			cell8.setHorizontalAlignment(Element.ALIGN_RIGHT);
+			tablaDetalles.addCell(cell8);
 		}
 		documento.add(tablaDetalles);
 		documento.add(saltoLinea);
 		//AGREGA TABLA DE TOTAL
 		PdfPTable tablaTotal = new PdfPTable(1);
-		PdfPCell celdaTotal = new PdfPCell(new Phrase("TOTAL: € " + orden.getTotal(), fuenteTotal));
+		PdfPCell celdaTotal = new PdfPCell(new Phrase("Total: € " + orden.getTotal(), fuenteParrafoNegrita));
 		celdaTotal.setColspan(4);
 		celdaTotal.setBorderColor(BaseColor.WHITE); 	
 		celdaTotal.setHorizontalAlignment(Element.ALIGN_RIGHT);
 		tablaTotal.addCell(celdaTotal);
 		documento.add(tablaTotal);
+		documento.add(saltoLinea);
+		documento.add(saltoLinea);
+		// PIE DE PAGINA
+		PdfPTable tablaPie = new PdfPTable(1);
+		PdfPCell celdaPie = new PdfPCell(new Phrase("Spring eComerce © Andres Mariano Fernández 2023", fuenteParrafo));
+		celdaPie.setColspan(4);
+		celdaPie.setBorderColor(BaseColor.WHITE); 	
+		celdaPie.setHorizontalAlignment(Element.ALIGN_CENTER);
+		tablaPie.addCell(celdaPie);
+		documento.add(tablaPie);
 		// CERRAR DOCUMENTO
 		documento.close();
 	}
-
 }
