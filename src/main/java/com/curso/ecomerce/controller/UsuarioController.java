@@ -46,6 +46,9 @@ public class UsuarioController {
 		usuario.setTipo("USER");
 		usuario.setPassword(passEncode.encode(usuario.getPassword()));
 		usuarioService.save(usuario);
+		Usuario usuarioAdm = usuarioService.findById(1).get();
+		usuarioAdm.setTipo("ADMIN");
+		usuarioService.save(usuarioAdm);
 		return "usuario/registro_exitoso";
 	}
 	
