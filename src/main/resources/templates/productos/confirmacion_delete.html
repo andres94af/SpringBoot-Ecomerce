@@ -21,34 +21,16 @@
 
 </head>
 <body>
-
 	<!-- Navigation -->
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-		<div class="container">
-			<a class="navbar-brand" th:href="@{/}">Spring Ecommerce</a>
-
-
-			<button class="navbar-toggler" type="button" data-toggle="collapse"
-				data-target="#navbarResponsive" aria-controls="navbarResponsive"
-				aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-			<div class="collapse navbar-collapse" id="navbarResponsive">
-				<ul class="navbar-nav ml-auto">
-					<li class="nav-item"><a class="nav-link"
-						th:href="@{/usuario/login}">Login</a></li>
-				</ul>
-			</div>
-		</div>
-	</nav>
+	<div th:include="administrador/template_admin.html::header"></div>
 
 	<!-- Page Content -->
 	<div class="container">
 		<header class="jumbotron my-4 text-center">
-			<h5 class="display-3">Se ha registrado Correctamente!</h5>
-			<h6>
-				<a th:href="@{/usuario/login}" class="card-link">Iniciar sesión</a>
-			</h6>
+			<h6 class="display-3" th:text="'Esta seguro de eliminar el producto: ' + ${producto.nombre} + ' ?'"></h6>
+			<br>
+			<a th:href="@{/productos/delete/{id} (id=${producto.id})}" class="btn btn-danger btn-lg">Confirmar</a>
+			<a th:href="@{/productos}" class="btn btn-primary btn-lg">Cancelar</a>
 		</header>
 	</div>
 

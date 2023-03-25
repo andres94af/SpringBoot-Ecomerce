@@ -89,7 +89,10 @@ public class HomeController {
 			boolean ingresado = detalles.stream().anyMatch(p -> p.getProducto().getId() == idProducto);
 			if (!ingresado) {
 				detalles.add(detalleOrden);
-				//producto.setCantidad(producto.getCantidad()-cantidad);
+			}else {
+				model.addAttribute("sesion", session.getAttribute("idusuario"));
+				model.addAttribute("nombreProducto", producto.getNombre());
+				return "usuario/producto_agregado";
 			}
 			double sumaTotal = 0;
 			sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
@@ -159,7 +162,6 @@ public class HomeController {
 			dt.setOrden(orden);
 			detalleOrdenService.save(dt);
 		}
-		
 		//crea pdf de la orden
 		try {
 			ordenService.generarOrdenPDF(orden, detalles);
@@ -168,7 +170,6 @@ public class HomeController {
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
-		
 		// limpiar detalles y orden (carrito). Luego redirecciona a la home
 		orden = new Orden();
 		detalles.clear();

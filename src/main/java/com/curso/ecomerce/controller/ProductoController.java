@@ -93,6 +93,14 @@ public class ProductoController {
 		return "redirect:/productos";
 	}
 	
+	@GetMapping("/confirmar/{id}")
+	public String confirmar(@PathVariable Integer id, Model model) {
+		Producto p = new Producto();
+		p=productoService.get(id).get();
+		model.addAttribute("producto", p);
+		return "productos/confirmacion_delete";
+	}
+	
 	@GetMapping("/delete/{id}")
 	public String delete(@PathVariable Integer id) {
 		Producto p = new Producto();

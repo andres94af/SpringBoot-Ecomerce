@@ -158,6 +158,7 @@ public class OrdenServiceImpl implements IOrdenService {
 		for(DetalleOrden d: detalles) {
 			PdfPCell cell5 = new PdfPCell(new Phrase(String.valueOf(d.getCantidad()),fuenteParrafo));
 			cell5.setBorderWidth(0);
+			cell5.setPaddingLeft(5);
 			tablaDetalles.addCell(cell5);
 			PdfPCell cell6 = new PdfPCell(new Phrase(d.getProducto().getNombre(),fuenteParrafo));
 			cell6.setBorderWidth(0);

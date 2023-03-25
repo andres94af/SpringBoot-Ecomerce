@@ -23,32 +23,16 @@
 <body>
 
 	<!-- Navigation -->
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-		<div class="container">
-			<a class="navbar-brand" th:href="@{/}">Spring Ecommerce</a>
+	<div th:insert="usuario/template_usuario.html :: header" th:if="${sesion==null}"></div>
 
-
-			<button class="navbar-toggler" type="button" data-toggle="collapse"
-				data-target="#navbarResponsive" aria-controls="navbarResponsive"
-				aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-			<div class="collapse navbar-collapse" id="navbarResponsive">
-				<ul class="navbar-nav ml-auto">
-					<li class="nav-item"><a class="nav-link"
-						th:href="@{/usuario/login}">Login</a></li>
-				</ul>
-			</div>
-		</div>
-	</nav>
+	<div th:insert="usuario/template_usuario.html :: header-user" th:unless="${sesion==null}"></div>
 
 	<!-- Page Content -->
 	<div class="container">
 		<header class="jumbotron my-4 text-center">
-			<h5 class="display-3">Se ha registrado Correctamente!</h5>
-			<h6>
-				<a th:href="@{/usuario/login}" class="card-link">Iniciar sesión</a>
-			</h6>
+			<h6 class="display-3" th:text="'El producto: ' + ${nombreProducto} + ' ya fue agregado al carrito previamente'"></h6>
+			<br>
+			<a th:href="@{/}" class="btn btn-success">Seguir comprando otros productos</a>
 		</header>
 	</div>
 
