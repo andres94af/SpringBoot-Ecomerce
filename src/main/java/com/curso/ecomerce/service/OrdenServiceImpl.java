@@ -102,9 +102,12 @@ public class OrdenServiceImpl implements IOrdenService {
 		// CREA DOCUMENTO
 		documento = new Document(PageSize.A4, 35, 30, 50, 50);
 		// ARCHIVO PDF
-		String rutaSistema = System.getProperty("user.home");
-		String nombreArchivo = "/Desktop/Ordenes/Orden 01-";
+//		String rutaSistema = System.getProperty("user.home");
+//		String nombreArchivo = "/Desktop/Ordenes/Orden 01-";
+		String rutaSistema = System.getProperty("user.dir");
+		String nombreArchivo = "/OrdenesPDF/Orden 01-";
 		String rutaDeGuardado = rutaSistema + nombreArchivo + orden.getNumero() + ".pdf";
+		System.out.println(rutaDeGuardado);
 		fileOutputStream = new FileOutputStream(rutaDeGuardado);
 		// OBTENER INSTANCIA DE PDF WRITER
 		PdfWriter.getInstance(documento, fileOutputStream);
