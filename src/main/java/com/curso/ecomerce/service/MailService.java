@@ -48,7 +48,7 @@ public class MailService {
 		BodyPart archivo = new MimeBodyPart();
 		MimeMultipart adjunto = new MimeMultipart();
 		try {
-			mensajeOrden.setText(orden.getUsuario().getUsername() + ". Adjuntamos comprobante de la Orden nº001-" + orden.getNumero());
+			mensajeOrden.setText(orden.getUsuario().getUsername() + ". Adjuntamos comprobante de la Orden Nº 001-" + orden.getNumero());
 			archivo.setDataHandler(new DataHandler(new FileDataSource(rutaDePdf)));
 			archivo.setFileName(new FileDataSource(rutaDePdf).getName());
 			adjunto.addBodyPart(mensajeOrden);
@@ -62,7 +62,7 @@ public class MailService {
 			MimeMessage message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(username));
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(orden.getUsuario().getEmail()));
-			message.setSubject("Spring eCommerce - Orden nº001-"+orden.getNumero());
+			message.setSubject("Spring eCommerce - Orden Nº 001-"+orden.getNumero());
 			message.setContent(adjunto);
 			Transport t = session.getTransport("smtp");
 			t.connect(username, password);
