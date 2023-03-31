@@ -2,6 +2,7 @@ package com.curso.ecomerce.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +44,12 @@ public class UsuarioController {
 
 	@PostMapping("/save")
 	public String saveUser(Usuario usuario) {
-		usuario.setTipo("USER");
+		OptionalInt ultimoId = usuarioService.findAll().stream().mapToInt(u -> u.getId()).max();
+		if (ultimoId.isEmpty()) {
+			usuario.setTipo("ADMIN");
+		}else {
+			usuario.setTipo("USER");
+		}
 		usuario.setPassword(passEncode.encode(usuario.getPassword()));
 		try {
 			usuarioService.save(usuario);			
@@ -51,14 +57,7 @@ public class UsuarioController {
 			e.printStackTrace();
 			return "usuario/registro_fallido";
 		}
-		//enviar mail usuario
-		
 		mailService.enviarMailRegistro(usuario);
-		
-		//establecer usuario 1 como admin
-		Usuario usuarioAdm = usuarioService.findById(1).get();
-		usuarioAdm.setTipo("ADMIN");
-		usuarioService.save(usuarioAdm);
 		return "usuario/registro_exitoso";
 	}
 	
