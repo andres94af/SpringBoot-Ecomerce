@@ -24,9 +24,10 @@ import com.curso.ecomerce.model.Usuario;
 import com.curso.ecomerce.service.IDetalleOrdenService;
 import com.curso.ecomerce.service.IOrdenService;
 import com.curso.ecomerce.service.IUsuarioService;
+import com.curso.ecomerce.service.MailService;
+import com.curso.ecomerce.service.OrdenPdfService;
 import com.curso.ecomerce.service.ProductoService;
 import com.itextpdf.text.DocumentException;
-
 import javax.servlet.http.HttpSession;
 
 @Controller
@@ -43,6 +44,12 @@ public class HomeController {
 
 	@Autowired
 	private IOrdenService ordenService;
+
+	@Autowired
+	private OrdenPdfService ordenPdfService;
+
+	@Autowired
+	private MailService mailService;
 
 	@Autowired
 	private IDetalleOrdenService detalleOrdenService;
@@ -89,7 +96,7 @@ public class HomeController {
 			boolean ingresado = detalles.stream().anyMatch(p -> p.getProducto().getId() == idProducto);
 			if (!ingresado) {
 				detalles.add(detalleOrden);
-			}else {
+			} else {
 				model.addAttribute("sesion", session.getAttribute("idusuario"));
 				model.addAttribute("nombreProducto", producto.getNombre());
 				return "usuario/producto_agregado";
@@ -101,7 +108,7 @@ public class HomeController {
 			model.addAttribute("orden", orden);
 			model.addAttribute("sesion", session.getAttribute("idusuario"));
 			return "usuario/carrito";
-		}else {
+		} else {
 			return "usuario/login";
 		}
 	}
@@ -157,19 +164,20 @@ public class HomeController {
 		for (DetalleOrden dt : detalles) {
 			Producto producto = dt.getProducto();
 			int cantidad = dt.getCantidad();
-			producto.setCantidad(producto.getCantidad()-cantidad);
+			producto.setCantidad(producto.getCantidad() - cantidad);
 			productoService.update(producto);
 			dt.setOrden(orden);
 			detalleOrdenService.save(dt);
 		}
-		//crea pdf de la orden
+		// crea pdf de la orden
 		try {
-			ordenService.generarOrdenPDF(orden, detalles);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (DocumentException e) {
+			ordenPdfService.generarOrdenPDF(orden, detalles);
+		} catch (FileNotFoundException | DocumentException e) {
 			e.printStackTrace();
 		}
+		// envia mail con el numero de orden
+		mailService.enviarMailOrdenCreada(orden);
+		
 		// limpiar detalles y orden (carrito). Luego redirecciona a la home
 		orden = new Orden();
 		detalles.clear();

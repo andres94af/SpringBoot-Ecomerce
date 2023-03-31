@@ -2,9 +2,7 @@ package com.curso.ecomerce.controller;
 
 import java.util.List;
 import java.util.Optional;
-
 import javax.servlet.http.HttpSession;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +13,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.curso.ecomerce.model.Orden;
 import com.curso.ecomerce.model.Usuario;
 import com.curso.ecomerce.service.IOrdenService;
 import com.curso.ecomerce.service.IUsuarioService;
-
+import com.curso.ecomerce.service.MailService;
 
 @Controller
 @RequestMapping("/usuario")
@@ -34,6 +31,9 @@ public class UsuarioController {
 	@Autowired
 	private IOrdenService ordenService;
 	
+	@Autowired
+	private MailService mailService;
+	
 	BCryptPasswordEncoder passEncode = new BCryptPasswordEncoder();
 
 	@GetMapping("/registro")
@@ -45,7 +45,17 @@ public class UsuarioController {
 	public String saveUser(Usuario usuario) {
 		usuario.setTipo("USER");
 		usuario.setPassword(passEncode.encode(usuario.getPassword()));
-		usuarioService.save(usuario);
+		try {
+			usuarioService.save(usuario);			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "usuario/registro_fallido";
+		}
+		//enviar mail usuario
+		
+		mailService.enviarMailRegistro(usuario);
+		
+		//establecer usuario 1 como admin
 		Usuario usuarioAdm = usuarioService.findById(1).get();
 		usuarioAdm.setTipo("ADMIN");
 		usuarioService.save(usuarioAdm);
